@@ -20,6 +20,7 @@ import {
     ApiBody,
     ApiConsumes,
     ApiCookieAuth,
+    ApiOkResponse,
     ApiOperation,
     ApiParam,
     ApiQuery,
@@ -34,6 +35,9 @@ import { IsotopePublishDTO } from './dto/publish-isotope.dto.js';
 import { IsotopeService, LikeAction } from './isotope.service.js';
 
 import type { AppRequest, AuthRequest } from '../auth/auth.deco.js';
+import { IsotopeView } from './views/isotope.view.js';
+import { LikeResult } from './dto/set-like.dto.js';
+import { FetchIsotopesResponse } from './dto/fetch-isotopes.dto.js';
 
 @ApiTags('isotopes')
 @Controller('isotopes')
@@ -52,6 +56,7 @@ export class IsotopeController {
             'Максимальный период полураспада как 10^N наносекунд. Если не задан - без фильтра.',
         example: 20,
     })
+    @ApiOkResponse({ type: FetchIsotopesResponse })
     @ApiResponse({
         status: 200,
         description: 'Список опубликованных изотопов',
@@ -81,6 +86,7 @@ export class IsotopeController {
     @Get('/draft')
     @ApiCookieAuth('session')
     @ApiOperation({ summary: 'Получить черновик текущего пользователя' })
+    @ApiOkResponse({ type: IsotopeView })
     @ApiResponse({ status: 200, description: 'Черновик или null' })
     @ApiResponse({ status: 401, description: 'Требуется авторизация' })
     async fetchDraft(
@@ -102,6 +108,7 @@ export class IsotopeController {
         description:
             'Если true - вернуть следующий опубликованный изотоп после id с циклическим переходом к первому',
     })
+    @ApiOkResponse({ type: IsotopeView })
     @ApiResponse({ status: 200, description: 'Изотоп найден' })
     @ApiResponse({ status: 404, description: 'Изотоп не найден' })
     async fetchById(
@@ -151,6 +158,7 @@ export class IsotopeController {
     })
     @ApiResponse({ status: 201, description: 'Черновик создан' })
     @ApiResponse({ status: 401, description: 'Требуется авторизация' })
+    @ApiOkResponse({ type: IsotopeView })
     @ApiResponse({ status: 409, description: 'Черновик уже существует' })
     @UseInterceptors(
         FileFieldsInterceptor([
@@ -189,6 +197,7 @@ export class IsotopeController {
     @ApiCookieAuth('session')
     @ApiOperation({ summary: 'Удалить опубликованный изотоп' })
     @ApiParam({ name: 'id', type: Number, description: 'ID изотопа' })
+    @ApiOkResponse({ type: IsotopeView })
     @ApiResponse({ status: 200, description: 'Изотоп удалён' })
     @ApiResponse({ status: 401, description: 'Требуется авторизация' })
     @ApiResponse({
@@ -208,6 +217,7 @@ export class IsotopeController {
     @ApiOperation({ summary: 'Опубликовать черновик' })
     @ApiConsumes('application/json')
     @ApiBody({ type: IsotopePublishDTO })
+    @ApiOkResponse({ type: IsotopeView })
     @ApiResponse({ status: 200, description: 'Черновик опубликован' })
     @ApiResponse({ status: 401, description: 'Требуется авторизация' })
     @ApiResponse({ status: 404, description: 'Черновик не найден' })
@@ -232,6 +242,7 @@ export class IsotopeController {
     })
     @ApiResponse({ status: 201, description: 'Результат лайка' })
     @ApiResponse({ status: 401, description: 'Требуется авторизация' })
+    @ApiOkResponse({ type: LikeResult })
     @ApiResponse({ status: 404, description: 'Изотоп не найден' })
     async setLike(
         @AuthReq() req: AuthRequest,

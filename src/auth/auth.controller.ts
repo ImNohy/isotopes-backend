@@ -3,6 +3,7 @@ import {
     ApiBody,
     ApiConsumes,
     ApiCookieAuth,
+    ApiOkResponse,
     ApiOperation,
     ApiResponse,
     ApiTags
@@ -11,7 +12,7 @@ import {
 import { AuthReq } from './auth.deco.js';
 import { AuthOnly, GuestOnly } from './auth.guards.js';
 import { AuthService } from './auth.service.js';
-import { LoginDTO } from './dto/login.dto.js';
+import { LoginDTO, LoginResponse } from './dto/login.dto.js';
 import { RegisterDTO } from './dto/register.dto.js';
 
 import type { AuthRequest } from './auth.deco.js';
@@ -36,6 +37,7 @@ export class AuthController {
     })
     @ApiResponse({ status: 403, description: 'Пользователь уже авторизован' })
     @ApiResponse({ status: 409, description: 'Логин уже занят' })
+    @ApiOkResponse({ type: LoginResponse })
     async register(
         @Body() dto: RegisterDTO,
         @Res({ passthrough: true }) res: Response,
